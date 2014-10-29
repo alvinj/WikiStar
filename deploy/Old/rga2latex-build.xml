@@ -1,0 +1,56 @@
+<!--
+  The main build file for the rga2latex program.
+-->
+
+  <project name="rga2latex" default="deploy" basedir="..">
+
+  <!-- IMPORTANT VARIABLE HERE -->
+  <property name="build.dir" value="c:/CVSProjects/DevDaily/RGADoc"/>
+  <path id="class.path">
+    <fileset dir="lib">
+      <include name="**/*.jar"/>
+      <include name="**/*.zip"/>
+    </fileset>
+  </path>
+
+  <target name="init">
+    <tstamp/>
+  </target>
+
+  <target name="create_classes_dir" depends="init">
+    <mkdir dir="${build.dir}/classes"/>
+  </target>
+
+  <!-- CLEAN TARGET -->
+  <target name="clean">
+    <delete dir="${build.dir}/classes"/>
+  </target>
+
+  <!-- COMPILE TARGET -->
+  <target name="compile" depends="clean,create_classes_dir">
+    <javac destdir="${build.dir}/classes" source="1.4" >
+      <src path="src"/>
+      <exclude name="**/_*.java"/>
+      <classpath refid="class.path"/>
+    </javac>
+    <copy todir="${build.dir}/classes">
+      <fileset dir="${build.dir}/src">
+        <include name="**/*.gif"/>
+        <include name="**/*.jpg"/>
+      </fileset>
+    </copy>
+  </target>
+
+
+  <!-- MAKE_JAR TARGET -->
+  <target name="deploy" depends="compile">
+    <jar basedir="${build.dir}/classes" jarfile="${build.dir}/jar/rga2latex.jar" manifest="${build.dir}/build/rga2latex.manifest"/>
+    <copy todir="${build.dir}/jar">
+      <fileset dir="${build.dir}/lib">
+        <include name="**/*.jar"/>
+        <include name="**/*.zip"/>
+      </fileset>
+    </copy>
+  </target>
+
+</project>

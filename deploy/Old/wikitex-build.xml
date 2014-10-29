@@ -1,0 +1,103 @@
+<project name="WikiTeX" default="do_bundle" basedir="..">
+
+  <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" />
+
+  <path id="class.path">
+    <fileset dir="lib">
+      <include name="**/*.jar"/>
+      <include name="**/*.zip"/>
+    </fileset>
+  </path>
+
+  <target name="init">
+    <tstamp/>
+  </target>
+
+  <target name="create_classes_dir" depends="init">
+    <mkdir dir="classes"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="classes"/>
+  </target>
+
+  <target name="compile" depends="clean,create_classes_dir">
+    <javac destdir="classes" source="1.5" >
+      <src path="src"/>
+      <exclude name="**/_*.java"/>
+      <classpath refid="class.path"/>
+    </javac>
+    <copy todir="classes">
+      <fileset dir="src">
+        <include name="**/*.gif"/>
+        <include name="**/*.jpg"/>
+        <include name="**/*.png"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- MAKE_JAR TARGET -->
+  <target name="create_jar" depends="compile">
+    <copy todir="classes/com/devdaily/opensource/jelly/view">
+      <fileset dir="helpfiles">
+        <include name="**/*.*"/>
+      </fileset>
+    </copy>
+    <jar basedir="classes" jarfile="jar/wikitex.jar" manifest="build/rgadoc.manifest"/>
+    <copy todir="jar">
+      <fileset dir="lib">
+        <include name="**/*.jar"/>
+        <include name="**/*.zip"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="do_bundle" depends="create_jar">
+    <!-- create a jar bundle for the mac -->
+    <jarbundler dir="release"
+                name="WikiStar"
+                shortname="WikiStar"
+                signature="Al Alexander"
+                mainclass="com.devdaily.opensource.jelly.Main" 
+                icon="build/wikitex.icns"
+                jvmversion="1.5+"
+                version="0.94"
+                infostring="WikiStar, v0.94, July, 2010"
+                build="2190"
+                bundleid="com.devdaily.opensource.jelly.Main" >
+
+      <!-- NEW -->
+
+      <documenttype name="Wiki document"
+                    extensions="wiki" 
+                    role="Editor"/>
+                     
+      <documenttype name="HTML document"
+                    extensions="html htm" 
+                    role="Editor"/>
+                     
+      <documenttype name="RTF document"
+                    extensions="rtf" 
+                    role="Viewer"/>
+
+      <documenttype name="Hello World images"
+                    mimetypes="image/jpeg image/png image/jpg" 
+                    role="Viewer"/>
+
+
+      <jarfileset dir="jar">
+        <include name="**/*.jar" />
+        <exclude name="**/CVS" />
+      </jarfileset>
+
+      <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>
+      <javaproperty name="apple.awt.brushMetal" value="true"/>
+      <javaproperty name="apple.awt.showGrowBox" value="false"/>
+      <javaproperty name="com.apple.mrj.application.apple.menu.about.name" value="WikiTeX"/>
+      <javaproperty name="apple.awt.textantialiasing" value="true"/>
+
+    </jarbundler>
+
+  </target>
+
+</project>
